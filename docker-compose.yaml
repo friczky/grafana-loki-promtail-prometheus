@@ -1,0 +1,90 @@
+version: '3'
+services:
+  grafana:
+     container_name: grafana
+     image: grafana/grafana:latest
+     ports:
+        - 3000:3000
+        - 9100:9100
+     volumes:
+       - grafana:/var/lib/grafana
+       - ./node_exporter.service:/etc/systemd/system/node_exporter.service
+     environment:
+        - GF_SECURITY_ADMIN_PASSWORD=grafana
+        - GF_INSTALL_PLUGINS=grafana-clock-panel
+    #  command: >
+    #     sh -c "
+    #     wget https://github.com/prometheus/node_exporter/releases/download/v1.5.0/node_exporter-1.5.0.linux-amd64.tar.gz && 
+    #     tar xvfz node_exporter-*.*-amd64.tar.gz &&configs:
+    #     cd node_exporter && 
+    #     ./node_exporter
+    #     "
+     network_mode: "host"
+    #  networks:
+    #   grafana-loki:
+    #     ipv4_address: 192.168.10.10
+  
+  grafana-loki: 
+      container_name: grafana-loki
+      image: grafana/loki:latest
+      ports:
+          - 3100:3100
+          - 9096:9096
+      volumes:
+        - ./loki-local-config.yaml:/etc/loki/local-config.yaml
+      command: -config.file=/etc/loki/local-config.yaml
+      network_mode: "host"
+      # networks:
+      #   grafana-loki:
+      #     ipv4_address: 192.168.10.20
+  
+  promtail:
+      container_name: promtail
+      image: grafana/promtail:latest
+      volumes:
+        - /var/log:/var/log
+        - ./promtail-local-config.yaml:/etc/promtail/promtail-config.yaml
+      command: -config.file=/etc/promtail/promtail-config.yaml
+      depends_on:
+        - grafana-loki
+      ports:
+        - 9080:9080
+      network_mode: "host"
+      # networks:
+      #   grafana-loki:
+      #     ipv4_address: 192.168.10.30
+  
+  prometheus:
+      container_name: prometheus
+      image: prom/prometheus:latest
+      ports:
+        - 9090:9090
+      volumes:
+        - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      command: --config.file=/etc/prometheus/prometheus.yml
+      depends_on:
+        - grafana-loki
+      network_mode: "host"
+      # networks:
+      #   grafana-loki:
+      #     ipv4_address: 192.168.10.40
+
+  elasticsearch_exporter:
+    image: quay.io/prometheuscommunity/elasticsearch-exporter:latest
+    command:
+     - '--es.uri=http://192.168.1.250:9200'
+    # restart: always
+    network_mode: "host"
+    ports:
+    - 9114:9114
+
+volumes:
+  grafana:
+  loki:
+  
+# networks:
+#   grafana-loki:
+#     ipam:
+#       driver: default
+#       config:
+#         - subnet: 192.168.10.0/24
