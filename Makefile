@@ -3,36 +3,53 @@
 # Description: Makefile for Grafana, Loki, and Promtail
 
 
-up: grafana loki promtail
+up: grafana-up loki-up promtail-up prometheus-up
 
-down: grafana-down loki-down promtail-down
+down: grafana-down loki-down promtail-down prometheus-down
 
-grafana:
+## Grafana
+grafana-up:
 	@echo "Starting Grafana"
-	@docker-compose -f grafana/docker-compose.yml up -d
+	@docker-compose -f grafana/docker-compose.yaml up -d
 	@echo "Grafana started"
 
 grafana-down:
 	@echo "Stopping Grafana"
-	@docker-compose -f grafana/docker-compose.yml down
+	@docker-compose -f grafana/docker-compose.yaml down
 	@echo "Grafana stopped"
 
-loki:
+
+## Loki
+loki-up:
 	@echo "Starting Loki"
-	@docker-compose -f loki/docker-compose.yml up -d
+	@docker-compose -f loki/docker-compose.yaml up -d
 	@echo "Loki started"
 
 loki-down:
 	@echo "Stopping Loki"
-	@docker-compose -f loki/docker-compose.yml down
+	@docker-compose -f loki/docker-compose.yaml down
 	@echo "Loki stopped"
 
-promtail: 
+
+## Promtail
+promtail-up: 
 	@echo "Starting Promtail"
-	@docker-compose -f promtail/docker-compose.yml up -d
+	@docker-compose -f promtail/docker-compose.yaml up -d
 	@echo "Promtail started"
 
 promtail-down:
 	@echo "Stopping Promtail"
-	@docker-compose -f promtail/docker-compose.yml down
+	@docker-compose -f promtail/docker-compose.yaml down
 	@echo "Promtail stopped"
+
+## Prometheus
+
+prometheus-up:
+	@echo "Starting Prometheus"
+	@docker-compose -f prometheus/docker-compose.yaml up -d
+	@echo "Prometheus started"
+
+prometheus-down:
+	@echo "Stopping Prometheus"
+	@docker-compose -f prometheus/docker-compose.yaml down
+	@echo "Prometheus stopped"

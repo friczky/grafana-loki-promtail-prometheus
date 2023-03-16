@@ -1,13 +1,13 @@
 version: '3'
 services:
     loki: 
-      container_name: loki
+      container_name: loki-new
       image: grafana/loki:latest
       ports:
           - 3100:3100
           - 9096:9096
       volumes:
-        - ./loki-local-config.yaml:/etc/loki/local-config.yaml
+        - ./loki-config.yaml:/etc/loki/local-config.yaml
       command: -config.file=/etc/loki/local-config.yaml
       network_mode: "host"
       # networks:
