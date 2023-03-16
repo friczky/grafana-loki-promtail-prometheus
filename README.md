@@ -29,3 +29,15 @@ Promtail is available at http://localhost:9080
 ```
 docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
 ```
+
+## How to Run
+
+Start All Services
+```
+make up
+```
+
+Stop All Services
+```
+make down
+```
